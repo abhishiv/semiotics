@@ -14,8 +14,11 @@ test:
 build:
 	make tsc
 
+.PHONY: esbuild
+esbuild:
+	./node_modules/.bin/esbuild --bundle src/index.ts --outdir=dist/cjs --minify --platform=node --target=node16 "--external:./node_modules/*"
+
 .PHONY: tsc
 tsc:
-	./node_modules/.bin/tsc --resolveJsonModule -p ./tsconfig.json --outDir ./dist/esm
-	./node_modules/.bin/tsc --resolveJsonModule -p ./tsconfig.json --module commonjs --outDir ./dist/cjs
+	./node_modules/.bin/tsc --resolveJsonModule -p ./tsconfig.json --module commonjs --outDir ./dist/cjs --emitDeclarationOnly
 

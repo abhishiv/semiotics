@@ -25,5 +25,5 @@ export enum SyntaxKind {
   ITypeLiteralObject = 'ITypeLiteralObject',
   ITypeLiteralArray = 'ITypeLiteralArray',
 
-  IMacro = 'IMacro'
+  IMacro = 'IMacro',
 }

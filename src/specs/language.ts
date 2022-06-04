@@ -11,15 +11,20 @@ export const ILiteralKinds = [
   SyntaxKind.IPrimitiveLiteral,
   SyntaxKind.IFunction,
   SyntaxKind.ILiteralObject,
-  SyntaxKind.ILiteralArray
+  SyntaxKind.ILiteralArray,
 ]
 export const ITypeLiteralKinds = [
   SyntaxKind.ITypePrimitiveLiteral,
   SyntaxKind.ITypeFunction,
   SyntaxKind.ITypeLiteralObject,
-  SyntaxKind.ITypeLiteralArray
+  SyntaxKind.ITypeLiteralArray,
 ]
-export const IValueKinds = [SyntaxKind.IReference, ...ILiteralKinds, SyntaxKind.IValueEvaluation]
+export const IValueKinds = [
+  SyntaxKind.IIdentifier,
+  SyntaxKind.IReference,
+  ...ILiteralKinds,
+  SyntaxKind.IValueEvaluation,
+]
 export const ITypeKinds = [SyntaxKind.IReference, ...ITypeLiteralKinds, SyntaxKind.ITypeEvaluation]
 export const IDefinitionKinds = [SyntaxKind.IValueDefinition, SyntaxKind.ITypeDefinition]
 

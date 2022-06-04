@@ -49,7 +49,7 @@ export async function createTSCompiler(rootDir: string, sys: ts.System): Promise
   )
   // https://github.com/microsoft/TypeScript/issues/29176#issuecomment-450232791
   host.afterProgramCreate = (program) => {
-    console.log('** We finished making the program! **')
+    //console.log('** We finished making the program! **')
   }
   const p = ts.createWatchProgram(host)
 

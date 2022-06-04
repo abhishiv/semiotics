@@ -1,4 +1,3 @@
-export * from './example_document'
 export * from './language_bridge'
 
 import { FS, copyAsyncToSync, mkdirP, InMemoryAdapter, path } from '@gratico/fs'
@@ -26,7 +25,10 @@ export async function getProject(fs: IFileSystem, repoPath: string) {
 	const syncFSAdapter = new InMemoryAdapter()
 	const syncFS = new FS(syncFSAdapter)
 	await mkdirP(syncFS, repoPath)
+	console.time('copyAsyncToSync')
 	await copyAsyncToSync(repoPath, fs.adapter, syncFSAdapter)
+	console.timeEnd('copyAsyncToSync')
+	console.log('syncFSAdapter', syncFSAdapter.blobs.size)
 	const sys = new TSSystem(syncFS, repoPath, ts)
 	const project = await createProject(syncFS, repoPath, ts, sys)
 

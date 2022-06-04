@@ -1,12 +1,13 @@
 import React, { useState as useState } from "react";
+import { Flex as Flex, Box as Box } from "@chakra-ui/react";
 export const HomePage = () => {
-    const output = <span style={{}}>
+    const output = <Box style={{}}>
+    <Flex style={{}}>
+    <Box style={{}}>
     {"hello world"}
-    
-    <span style={{}}>
-    {"hello world"}
-    </span>
-    </span>;
+    </Box>
+    </Flex>
+    </Box>;
     return output;
 };
 export const helloWorldFunction = () => {

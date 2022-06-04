@@ -34,6 +34,35 @@ imports:
     id: 9npg_NNcfK
     kind: IPrimitiveLiteral
     value: react
+- id: Oc7g6i-bgB2
+  kind: ISourceFileImport
+  elements:
+  - id: YTElnSdsAR2
+    kind: ISourceFileImportElement
+    type: normal
+    name:
+      id: B-UQXrlALn2
+      kind: IIdentifier
+      name: Flex
+    as:
+      id: vmpgTzfsxg2
+      kind: IIdentifier
+      name: Flex
+  - id: YTElnSdsAR3
+    kind: ISourceFileImportElement
+    type: normal
+    name:
+      id: B-UQXrlALn3
+      kind: IIdentifier
+      name: Box
+    as:
+      id: vmpgTzfsxg3
+      kind: IIdentifier
+      name: Box
+  path:
+    id: 9npg_NNcfK2
+    kind: IPrimitiveLiteral
+    value: "@chakra-ui/react"
 defs:
 - id: umpF55jSiF
   kind: IValueDefinition
@@ -74,7 +103,7 @@ defs:
           link:
           - id: V4xfqv34xlS
             kind: IIdentifier
-            name: span
+            name: Box
         - id: YPjShIDD4en
           kind: ILiteralObject
           keys:
@@ -86,9 +115,6 @@ defs:
             kind: ILiteralObject
             keys: []
             value: []
-        - id: L_kTXzprlHO
-          kind: IPrimitiveLiteral
-          value: hello world
         - id: TkbrA6jYu7M
           kind: ILiteralArray
           metadata:
@@ -101,7 +127,7 @@ defs:
             link:
             - id: cFfKX7mouNK
               kind: IIdentifier
-              name: span
+              name: Flex
           - id: eZN_Ng2IAK3
             kind: ILiteralObject
             keys:
@@ -113,9 +139,35 @@ defs:
               kind: ILiteralObject
               keys: []
               value: []
-          - id: HFRWwU4958u
-            kind: IPrimitiveLiteral
-            value: hello world
+
+          - id: TkbrA6jYu7MA
+            kind: ILiteralArray
+            metadata:
+              "^printer": co.grati.codemaker.printers.JSX
+              "^transpiler": co.grati.codemaker.printers.JSX
+              jsxPragma: React
+            value:
+            - id: tn_cGiqVD9SA
+              kind: IReference
+              link:
+              - id: cFfKX7mouNKA
+                kind: IIdentifier
+                name: Box
+            - id: eZN_Ng2IAK3A
+              kind: ILiteralObject
+              keys:
+              - id: y-CYLMWeM-gA
+                kind: IIdentifier
+                name: style
+              value:
+              - id: sSeTpcB7uuwA
+                kind: ILiteralObject
+                keys: []
+                value: []
+
+            - id: HFRWwU4958uA
+              kind: IPrimitiveLiteral
+              value: hello world
 - id: PIhDCK5fxdL
   kind: IValueDefinition
   metadata:

@@ -11,6 +11,7 @@
     "outDir": "dist",
     "noEmit": false,
     "jsx": "react",
+    "resolveJsonModule": true,
     "lib": ["es2015", "es5", "dom", "scripthost", "esnext.asynciterable", "esnext"],
     "baseUrl": "src",
     "skipLibCheck": true,

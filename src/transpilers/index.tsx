@@ -15,7 +15,7 @@ import {
   TranspilerOptions,
   TranspilerNodePath,
   ISourceFileImport,
-  ISourceFileImportElement
+  ISourceFileImportElement,
 } from '../specs/index'
 import ts from 'typescript'
 
@@ -28,12 +28,19 @@ export const importElementTranspiler: ITranspiler<ISourceFileImportElement> = {
     return factory.createImportSpecifier(
       false,
       translateNode(toolkit, node.name, ['name']),
-      translateNode(toolkit, node.name, ['name'])
+      translateNode(toolkit, node.name, ['name']),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
-    return []
-  }
+    //    console.log('nnn', node, nodePath)
+    if (node.type === 'default') {
+      return ['name']
+    } else {
+      // todo fix urgently
+      const index = '0'
+      return ['namedBindings', 'elements', index, 'propertyName']
+    }
+  },
 }
 
 export const importTranspiler: ITranspiler<ISourceFileImport> = {
@@ -57,26 +64,23 @@ export const importTranspiler: ITranspiler<ISourceFileImport> = {
         factory.createNamedImports(
           namedImports.map((namedImportsIndex) => {
             return translateNode(toolkit, node.elements[namedImportsIndex], ['elements', namedImportsIndex + ''])
-          })
-        )
+          }),
+        ),
       ),
-      factory.createStringLiteral(node.path.value as string)
+      factory.createStringLiteral(node.path.value as string),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
-    const childPath = nodePath[nodePath.length - 1]
-    if (!childPath) throw new Error('NO_CHILD')
-    const { propName, index: propIndex } = childPath
-    // todo implement it
-    return ['statements', propIndex + '']
-  }
+    // console.log('no', node, nodePath)
+    return ['importClause']
+  },
 }
 export const sourceFileTranspiler: ITranspiler<ISourceFile> = {
   syntaxKind: SyntaxKind.ISourceFile,
   transpile: (toolkit, node: ISourceFile) => {
     const transpiledNodes = [
       ...[...node.imports].map((node, i) => translateNode(toolkit, node, ['imports', i + ''])),
-      ...[...node.defs].map((node, i) => translateNode(toolkit, node, ['defs', i + '']))
+      ...[...node.defs].map((node, i) => translateNode(toolkit, node, ['defs', i + ''])),
     ]
 
     const sourceText = transpiledNodes.map(transpileTSNode).join('\n')
@@ -90,7 +94,7 @@ export const sourceFileTranspiler: ITranspiler<ISourceFile> = {
     const { propName, index: propIndex } = childPath
     const index = propName === 'imports' ? (propIndex as number) : node.imports.length + (propIndex as number)
     return ['statements', index + '']
-  }
+  },
 }
 
 export const valueDefinitionTranspiler: ITranspiler<IValueDefinition> = {
@@ -109,11 +113,11 @@ export const valueDefinitionTranspiler: ITranspiler<IValueDefinition> = {
               | ts.ArrayBindingPattern,
             undefined,
             undefined,
-            translateNode(toolkit, node.value, [...path, 'value']) as unknown as ts.Expression
-          )
+            translateNode(toolkit, node.value, [...path, 'value']) as unknown as ts.Expression,
+          ),
         ],
-        ts.NodeFlags.Const
-      )
+        ts.NodeFlags.Const,
+      ),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
@@ -127,7 +131,7 @@ export const valueDefinitionTranspiler: ITranspiler<IValueDefinition> = {
     }
     console.log(doc, node, nodePath, childPath)
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 
 export const primitiveLiteralTranspiler: ITranspiler<IPrimitiveLiteral> = {
@@ -144,7 +148,7 @@ export const primitiveLiteralTranspiler: ITranspiler<IPrimitiveLiteral> = {
     } else if (node.value === null) {
       return factory.createNull()
     }
-  }
+  },
 }
 
 export const identifierTranspiler: ITranspiler<IIdentifier> = {
@@ -152,7 +156,7 @@ export const identifierTranspiler: ITranspiler<IIdentifier> = {
   transpile: (toolkit, node) => {
     const factory = ts.factory
     return factory.createIdentifier(node.name)
-  }
+  },
 }
 export const literalObjectTranspiler: ITranspiler<ILiteralObject> = {
   syntaxKind: SyntaxKind.ILiteralObject,
@@ -163,9 +167,9 @@ export const literalObjectTranspiler: ITranspiler<ILiteralObject> = {
         const value = node.value[i]
         return factory.createPropertyAssignment(
           translateNode(toolkit, key, [...path, 'key', i + '']) as ts.Identifier,
-          translateNode(toolkit, value, [...path, 'value', i + '']) as ts.Identifier
+          translateNode(toolkit, value, [...path, 'value', i + '']) as ts.Identifier,
         )
-      })
+      }),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
@@ -178,7 +182,7 @@ export const literalObjectTranspiler: ITranspiler<ILiteralObject> = {
       return ['properties', propIndex + '', 'initializer']
     }
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 export const literalArrayTranspiler: ITranspiler<ILiteralArray> = {
   syntaxKind: SyntaxKind.ILiteralArray,
@@ -187,7 +191,7 @@ export const literalArrayTranspiler: ITranspiler<ILiteralArray> = {
     return factory.createNodeArray(
       node.value.map((v) => {
         return translateNode(toolkit, v, [...path]) as ts.Identifier
-      })
+      }),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
@@ -198,7 +202,7 @@ export const literalArrayTranspiler: ITranspiler<ILiteralArray> = {
       return ['elements', propIndex + '']
     }
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 export const valueEvaluationTranspiler: ITranspiler<IValueEvaluation> = {
   syntaxKind: SyntaxKind.IValueEvaluation,
@@ -210,7 +214,7 @@ export const valueEvaluationTranspiler: ITranspiler<IValueEvaluation> = {
     return factory.createCallExpression(
       target,
       [],
-      node.arguments.map((arg, i) => translateNode(toolkit, arg, [...path, 'arguments', i + '']) as ts.Expression)
+      node.arguments.map((arg, i) => translateNode(toolkit, arg, [...path, 'arguments', i + '']) as ts.Expression),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
@@ -223,13 +227,13 @@ export const valueEvaluationTranspiler: ITranspiler<IValueEvaluation> = {
       return ['arguments', propIndex + '']
     }
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 export const referenceTranspiler: ITranspiler<IReference> = {
   syntaxKind: SyntaxKind.IReference,
   transpile: (toolkit, node, path) => {
     const factory = ts.factory
-    const obj = node.link
+    const obj = [...node.link]
       .reverse()
       .reduce((state: ts.Identifier | ts.PropertyAccessExpression | undefined, record, i) => {
         const n = translateNode(toolkit, record, [...path, 'link', i + '']) as ts.Identifier
@@ -240,7 +244,7 @@ export const referenceTranspiler: ITranspiler<IReference> = {
         }
       }, undefined)
     return obj
-  }
+  },
 }
 
 export const functionTranspiler: ITranspiler<IFunction> = {
@@ -263,14 +267,14 @@ export const functionTranspiler: ITranspiler<IFunction> = {
                   translateNode(toolkit, (last as IValueDefinition).name, [
                     ...path,
                     'value',
-                    node.value.length + 1 + ''
-                  ]) as ts.Expression
-                )
+                    node.value.length + 1 + '',
+                  ]) as ts.Expression,
+                ),
               ]
-            : [])
+            : []),
         ],
-        true
-      )
+        true,
+      ),
     )
   },
   getChildNodePath: (doc, node, nodePath) => {
@@ -291,7 +295,7 @@ export const functionTranspiler: ITranspiler<IFunction> = {
       return ['body', 'statements', propIndex + '']
     }
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 
 const jsxTranspiler: ITranspiler<ILiteralArray> = {
@@ -312,11 +316,11 @@ const jsxTranspiler: ITranspiler<ILiteralArray> = {
               translateNode(toolkit, prop, [...path, 'value', '1', 'keys', `${i}`]) as ts.Identifier,
               factory.createJsxExpression(
                 undefined,
-                translateNode(toolkit, initializerNode, [...path, 'value', '1', 'value', `${i}`]) as ts.Expression
-              )
+                translateNode(toolkit, initializerNode, [...path, 'value', '1', 'value', `${i}`]) as ts.Expression,
+              ),
             )
-          })
-        )
+          }),
+        ),
       ),
       (children || []).reduce<ts.JsxChild[]>((state, el, i) => {
         const jsx = (() => {
@@ -324,23 +328,24 @@ const jsxTranspiler: ITranspiler<ILiteralArray> = {
           if (el.kind === SyntaxKind.IPrimitiveLiteral) {
             return factory.createJsxExpression(
               undefined,
-              translateNode(toolkit, el, [...path, 'value', key]) as ts.Identifier
+              translateNode(toolkit, el, [...path, 'value', key]) as ts.Identifier,
             )
           } else if (el.kind === SyntaxKind.ILiteralArray) {
             return translateNode(toolkit, el, [...path, 'value', key]) as ts.JsxElement
           } else if (el.kind === SyntaxKind.IReference) {
             return factory.createJsxExpression(
               undefined,
-              translateNode(toolkit, el, [...path, 'value', key]) as ts.Identifier
+              translateNode(toolkit, el, [...path, 'value', key]) as ts.Identifier,
             )
           } else {
+            console.log(el)
             throw new Error('error')
           }
         })()
         return state.concat([factory.createJsxText('\n', true)], jsx, factory.createJsxText('\n', true))
       }, []),
 
-      factory.createJsxClosingElement(translateNode(toolkit, tag, [...path, 'value', '0']) as ts.Identifier)
+      factory.createJsxClosingElement(translateNode(toolkit, tag, [...path, 'value', '0']) as ts.Identifier),
     )
     return jsx
   },
@@ -350,7 +355,7 @@ const jsxTranspiler: ITranspiler<ILiteralArray> = {
     const { propName, index: propIndex } = childPath
 
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 
 export const transpilers = [
@@ -365,7 +370,7 @@ export const transpilers = [
   valueDefinitionTranspiler,
   valueEvaluationTranspiler,
   functionTranspiler,
-  jsxTranspiler
+  jsxTranspiler,
 ]
 
 export const binaryOperatorMacroTranspiler: ITranspiler<IIdentifier> = {
@@ -376,7 +381,7 @@ export const binaryOperatorMacroTranspiler: ITranspiler<IIdentifier> = {
   },
   getChildNodePath: (doc, node, nodePath) => {
     throw new Error('INVALID_PATH')
-  }
+  },
 }
 
 const macroTranspilers = [binaryOperatorMacroTranspiler]
@@ -385,11 +390,11 @@ export const defaultTooklikt: IToolKit = {
   transpilers: [...transpilers, ...macroTranspilers],
   printers: [],
   printerGroups: [],
-  macroTranspilers
+  macroTranspilers,
 }
 
 export const defaultConfig: TranspilerOptions = {
-  toolkit: defaultTooklikt
+  toolkit: defaultTooklikt,
 }
 
 export function getTranspiler(toolkit: IToolKit, node: INode) {
@@ -411,7 +416,7 @@ export function transpileTSNode(node: ts.Node) {
   const printer: ts.Printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
     removeComments: false,
-    omitTrailingSemicolon: false
+    omitTrailingSemicolon: false,
   })
   const sourceFile = ts.createSourceFile('destFile.tsx', '', ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS)
   const text = printer.printNode(ts.EmitHint.Unspecified, node, sourceFile)

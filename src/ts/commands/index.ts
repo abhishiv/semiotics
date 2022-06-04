@@ -17,6 +17,9 @@ import lget from 'lodash.get'
 import typescript, { SymbolFlags } from 'typescript'
 import { toSimpleType } from 'ts-simple-type'
 import { ITSProject } from '../types'
+import ts from 'typescript'
+import { Flex } from '@chakra-ui/react'
+import { check } from 'prettier'
 
 const get = (obj: unknown, path: string[]) => (path.length === 0 ? obj : lget(obj, path))
 
@@ -24,9 +27,12 @@ export function getAncestorChain(toolkit: IToolKit, sourceFile: ISourceFile, pat
   const parentNodes = path.reduce((state, stepPath, index) => {
     const ancestorPath = path.slice(0, index + 1)
     const ancestorFlatPath = flattenASTPath(ancestorPath)
+    //console.log('ancestorFlatPath', ancestorPath, ancestorFlatPath)
     const node: INode | undefined = get(sourceFile, ancestorFlatPath)
     //    console.log(ancestorFlatPath)
-    const parentNode: INode = get(sourceFile, flattenASTPath(path.slice(0, index))) || sourceFile
+    const thisPath = flattenASTPath(path.slice(0, index))
+    //console.log('thisPath', thisPath)
+    const parentNode: INode = get(sourceFile, thisPath) || sourceFile
 
     if (!node) {
       console.error(node, path, ancestorPath, sourceFile)
@@ -37,19 +43,22 @@ export function getAncestorChain(toolkit: IToolKit, sourceFile: ISourceFile, pat
     if (!transpiler) throw new Error('NO_TRANSPILER')
     const parentTranspiler = getTranspiler(toolkit, parentNode)
     if (!parentTranspiler) throw new Error('NO_TRANSPILER')
+    //console.log(parentTranspiler)
+    const translatedPath = parentTranspiler.getChildNodePath
+      ? parentTranspiler.getChildNodePath(sourceFile, parentNode, path.slice(0, index + 1))
+      : undefined
+    //console.log('translatedPath', translatedPath)
     state.push({
       node: node,
       parentNode,
       path: path.slice(0, index + 1),
       transpiler,
-      translatedPath: parentTranspiler.getChildNodePath
-        ? parentTranspiler.getChildNodePath(sourceFile, parentNode, path.slice(0, index + 1))
-        : undefined,
+      translatedPath,
       //
     })
     return state
   }, [] as { node: INode; parentNode: INode; path: ASTPath[]; transpiler: ITranspiler; translatedPath?: string[] }[])
-
+  //console.log('parentNodes', parentNodes)
   return parentNodes
 }
 export function getTranslatedPath(toolkit: IToolKit, sourceFile: ISourceFile, path: ASTPath[]) {
@@ -83,6 +92,35 @@ export async function getTranslateFileAndPath(
   return { sourceFile, translatedPath }
 }
 
+export function reifyType(checker: ts.TypeChecker, type: ts.Symbol) {
+  if (!type || !type.declarations || !type.declarations[0]) return null
+  const propsType = checker.getTypeOfSymbolAtLocation(type, type.declarations[0] as ts.Node)
+  const baseProps = propsType.getApparentProperties()
+  let propertiesOfProps = baseProps
+
+  if (propsType.isUnionOrIntersection()) {
+    propertiesOfProps = [
+      // Resolve extra properties in the union/intersection
+      ...(propertiesOfProps = (checker as any).getAllPossiblePropertiesOfTypes(propsType.types)),
+      // But props we already have override those as they are already correct.
+      ...baseProps,
+    ]
+
+    if (!propertiesOfProps.length) {
+      const subTypes = (checker as any).getAllPossiblePropertiesOfTypes(
+        propsType.types.reduce<ts.Symbol[]>(
+          // @ts-ignore
+          (all, t) => [...all, ...(t.types || [])],
+          [],
+        ),
+      )
+
+      propertiesOfProps = [...subTypes, ...baseProps]
+    }
+  }
+  return propertiesOfProps
+}
+
 export async function getFunctionParameters(
   project: ITSProject,
   fileBuffer: IFileBuffer,
@@ -91,21 +129,23 @@ export async function getFunctionParameters(
 ) {
   const { sourceFile, translatedPath } = await getTranslateFileAndPath(project, fileBuffer, ast, path)
   const checker = project.compiler.watchProgram.getProgram().getProgram().getTypeChecker()
-
+  //console.log('translatedPath', translatedPath)
   const scopedNode: typescript.CallExpression = get(sourceFile, translatedPath)
-  //  const l = scopedNode.name
-  //  const sym = checker.getSymbolAtLocation(l)
-  //  console.log(sym)
-  //  const signature = checker.getSignatureFromDeclaration(sym?.declarations[0])
-  //  console.log(signature)
+  const s = checker.getAliasedSymbol((scopedNode.parent as any).symbol)
+  const dec = s.declarations && s.declarations[0]
+  const type = checker.getTypeFromTypeNode((dec as any).type)
+  const sig = type.getCallSignatures()[0]
+  const propsObj = sig.getParameters()[0]
 
-  const type = checker.getTypeAtLocation(scopedNode)
-  //  const signature = checker.getSignatureFromDeclaration(scopedNode)
+  const propertiesOfProps = reifyType(checker, propsObj)
+  if (!propertiesOfProps) return []
+  const colorSymbol = propertiesOfProps.find((el) => el.name === 'color')
+  if (!colorSymbol || !colorSymbol.declarations) return []
+  const colorSymbolType = checker.getTypeOfSymbolAtLocation(colorSymbol, colorSymbol.declarations[0] as ts.Node)
+  //console.log(props)
+  debugger
 
-  if (!type) throw new Error('NO_TYPE')
-  const simpleType = toSimpleType(type as any, checker as any)
-
-  return simpleType
+  return propertiesOfProps
 }
 
 export async function getScopeCompletions(

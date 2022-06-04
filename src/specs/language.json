@@ -1,111 +1,91 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
-        "SyntaxKind": {
-            "title": "SyntaxKind",
-            "enum": [
-                "IArrayPaterrn",
-                "IFunction",
-                "IIdentifier",
-                "ILiteralArray",
-                "ILiteralObject",
-                "IObjectPaterrn",
-                "IPrimitiveLiteral",
-                "IReference",
-                "ISourceFile",
-                "ISourceFileImport",
-                "ISourceFileImportElement",
-                "ITypeDefinition",
-                "ITypeEvaluation",
-                "ITypeFunction",
-                "ITypeLiteralArray",
-                "ITypeLiteralObject",
-                "ITypePrimitiveLiteral",
-                "IValueDefinition",
-                "IValueEvaluation"
-            ],
-            "type": "string"
-        },
-        "ISourceFileImportElement": {
-            "title": "ISourceFileImportElement",
-            "type": "object",
+        "ASTPath": {
             "properties": {
-                "type": {
+                "index": {
+                    "type": "number"
+                },
+                "propName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IArrayPaterrn": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
                     "enum": [
-                        "default",
-                        "normal"
+                        "IArrayPaterrn"
                     ],
-                    "type": "string",
-                    "title": "type"
+                    "type": "string"
                 },
-                "name": {
-                    "$ref": "#/definitions/IIdentifier",
-                    "title": "name"
-                },
-                "as": {
-                    "$ref": "#/definitions/IIdentifier",
-                    "title": "as"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "kind": {
-                    "$ref": "#/definitions/SyntaxKind",
-                    "title": "kind"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "as",
-                "id",
-                "kind",
-                "name",
-                "type"
-            ]
-        },
-        "ISourceFileImport": {
-            "title": "ISourceFileImport",
-            "type": "object",
-            "properties": {
-                "elements": {
-                    "type": "array",
+                "metadata": {},
+                "patterns": {
                     "items": {
-                        "$ref": "#/definitions/ISourceFileImportElement"
+                        "$ref": "#/definitions/IName"
                     },
-                    "title": "elements"
-                },
-                "path": {
-                    "$ref": "#/definitions/IPrimitiveLiteral",
-                    "title": "path"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "kind": {
-                    "$ref": "#/definitions/SyntaxKind",
-                    "title": "kind"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    "type": "array"
                 }
             },
-            "required": [
-                "elements",
-                "id",
-                "kind",
-                "path"
+            "type": "object"
+        },
+        "IDefinition": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/IValueDefinition"
+                },
+                {
+                    "$ref": "#/definitions/ITypeDefinition"
+                }
             ]
         },
-        "ISourceFile": {
-            "title": "ISourceFile",
-            "type": "object",
+        "IFunction": {
             "properties": {
-                "defs": {
-                    "type": "array",
+                "async": {
+                    "type": "boolean"
+                },
+                "defaultParameters": {
+                    "items": {
+                        "$ref": "#/definitions/IValue"
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IFunction"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "parameters": {
+                    "items": {
+                        "$ref": "#/definitions/IName"
+                    },
+                    "type": "array"
+                },
+                "paramtersType": {
+                    "items": {
+                        "$ref": "#/definitions/IType"
+                    },
+                    "type": "array"
+                },
+                "returnType": {
+                    "$ref": "#/definitions/IType"
+                },
+                "typeParameters": {
+                    "items": {
+                        "$ref": "#/definitions/IType"
+                    },
+                    "type": "array"
+                },
+                "value": {
                     "items": {
                         "anyOf": [
                             {
@@ -116,33 +96,28 @@
                             }
                         ]
                     },
-                    "title": "defs"
-                },
-                "imports": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ISourceFileImport"
-                    },
-                    "title": "imports"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "kind": {
-                    "$ref": "#/definitions/SyntaxKind",
-                    "title": "kind"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    "type": "array"
                 }
             },
-            "required": [
-                "defs",
-                "id",
-                "imports",
-                "kind"
-            ]
+            "type": "object"
+        },
+        "IIdentifier": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IIdentifier"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
         },
         "ILiteral": {
             "anyOf": [
@@ -160,62 +135,180 @@
                 }
             ]
         },
-        "ITypeLiteral": {
+        "ILiteralArray": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "ILiteralArray"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "value": {
+                    "items": {
+                        "$ref": "#/definitions/IValue"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "ILiteralObject": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "keys": {
+                    "items": {
+                        "$ref": "#/definitions/IIdentifier"
+                    },
+                    "type": "array"
+                },
+                "kind": {
+                    "enum": [
+                        "ILiteralObject"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "value": {
+                    "items": {
+                        "$ref": "#/definitions/IValue"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IMacro": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IMacro"
+                    ],
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/definitions/M"
+                },
+                "metadata": {},
+                "payload": {
+                    "$ref": "#/definitions/T"
+                }
+            },
+            "type": "object"
+        },
+        "IMacro<any,any>": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IMacro"
+                    ],
+                    "type": "string"
+                },
+                "meta": {},
+                "metadata": {},
+                "payload": {}
+            },
+            "type": "object"
+        },
+        "IName": {
             "anyOf": [
                 {
-                    "$ref": "#/definitions/ITypePrimitiveLiteral"
+                    "$ref": "#/definitions/IIdentifier"
                 },
                 {
-                    "$ref": "#/definitions/ITypeFunction"
+                    "$ref": "#/definitions/IObjectPaterrn"
                 },
                 {
-                    "$ref": "#/definitions/ITypeLiteralObject"
-                },
-                {
-                    "$ref": "#/definitions/ITypeLiteralArray"
+                    "$ref": "#/definitions/IArrayPaterrn"
                 }
             ]
         },
-        "ISimpleValue": {
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/IPrimitiveLiteral"
+        "INode": {
+            "properties": {
+                "id": {
+                    "type": "string"
                 },
-                {
-                    "$ref": "#/definitions/IFunction"
+                "kind": {
+                    "$ref": "#/definitions/SyntaxKind"
                 },
-                {
-                    "$ref": "#/definitions/ILiteralObject"
-                },
-                {
-                    "$ref": "#/definitions/ILiteralArray"
-                },
-                {
-                    "$ref": "#/definitions/IReference"
-                }
-            ]
+                "metadata": {}
+            },
+            "type": "object"
         },
-        "IValue": {
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/IPrimitiveLiteral"
+        "IObjectPaterrn": {
+            "properties": {
+                "id": {
+                    "type": "string"
                 },
-                {
-                    "$ref": "#/definitions/IFunction"
+                "kind": {
+                    "enum": [
+                        "IObjectPaterrn"
+                    ],
+                    "type": "string"
                 },
-                {
-                    "$ref": "#/definitions/ILiteralObject"
-                },
-                {
-                    "$ref": "#/definitions/ILiteralArray"
-                },
-                {
-                    "$ref": "#/definitions/IReference"
-                },
-                {
-                    "$ref": "#/definitions/IValueEvaluation"
+                "metadata": {},
+                "patterns": {
+                    "items": {
+                        "$ref": "#/definitions/IName"
+                    },
+                    "type": "array"
                 }
-            ]
+            },
+            "type": "object"
+        },
+        "IPrimitiveLiteral": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IPrimitiveLiteral"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "value": {
+                    "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "IReference": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "IReference"
+                    ],
+                    "type": "string"
+                },
+                "link": {
+                    "items": {
+                        "$ref": "#/definitions/IIdentifier"
+                    },
+                    "type": "array"
+                },
+                "metadata": {}
+            },
+            "type": "object"
         },
         "ISimpleType": {
             "anyOf": [
@@ -235,6 +328,105 @@
                     "$ref": "#/definitions/IReference"
                 }
             ]
+        },
+        "ISimpleValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/IPrimitiveLiteral"
+                },
+                {
+                    "$ref": "#/definitions/IFunction"
+                },
+                {
+                    "$ref": "#/definitions/ILiteralObject"
+                },
+                {
+                    "$ref": "#/definitions/ILiteralArray"
+                },
+                {
+                    "$ref": "#/definitions/IReference"
+                },
+                {
+                    "$ref": "#/definitions/IIdentifier"
+                }
+            ]
+        },
+        "ISourceFile": {
+            "properties": {
+                "defs": {
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/IValueDefinition"
+                            },
+                            {
+                                "$ref": "#/definitions/ITypeDefinition"
+                            }
+                        ]
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imports": {
+                    "items": {
+                        "$ref": "#/definitions/ISourceFileImport"
+                    },
+                    "type": "array"
+                },
+                "kind": {
+                    "$ref": "#/definitions/SyntaxKind"
+                },
+                "metadata": {}
+            },
+            "type": "object"
+        },
+        "ISourceFileImport": {
+            "properties": {
+                "elements": {
+                    "items": {
+                        "$ref": "#/definitions/ISourceFileImportElement"
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/SyntaxKind"
+                },
+                "metadata": {},
+                "path": {
+                    "$ref": "#/definitions/IPrimitiveLiteral"
+                }
+            },
+            "type": "object"
+        },
+        "ISourceFileImportElement": {
+            "properties": {
+                "as": {
+                    "$ref": "#/definitions/IIdentifier"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/SyntaxKind"
+                },
+                "metadata": {},
+                "name": {
+                    "$ref": "#/definitions/IIdentifier"
+                },
+                "type": {
+                    "enum": [
+                        "default",
+                        "normal"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
         },
         "IType": {
             "anyOf": [
@@ -258,292 +450,30 @@
                 }
             ]
         },
-        "IDefinition": {
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/IValueDefinition"
+        "ITypeDefinition": {
+            "properties": {
+                "id": {
+                    "type": "string"
                 },
-                {
-                    "$ref": "#/definitions/ITypeDefinition"
-                }
-            ]
-        },
-        "IName": {
-            "anyOf": [
-                {
+                "kind": {
+                    "enum": [
+                        "ITypeDefinition"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "name": {
                     "$ref": "#/definitions/IIdentifier"
                 },
-                {
-                    "$ref": "#/definitions/IObjectPaterrn"
-                },
-                {
-                    "$ref": "#/definitions/IArrayPaterrn"
-                }
-            ]
-        },
-        "INode": {
-            "title": "INode",
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "kind": {
-                    "$ref": "#/definitions/SyntaxKind",
-                    "title": "kind"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind"
-            ]
-        },
-        "ASTPath": {
-            "title": "ASTPath",
-            "type": "object",
-            "properties": {
-                "propName": {
-                    "type": "string",
-                    "title": "propName"
-                },
-                "index": {
-                    "type": "number",
-                    "title": "index"
-                }
-            },
-            "required": [
-                "propName"
-            ]
-        },
-        "IIdentifier": {
-            "title": "IIdentifier",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IIdentifier"
-                    ],
-                    "title": "kind"
-                },
-                "name": {
-                    "type": "string",
-                    "title": "name"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "name"
-            ]
-        },
-        "IReference": {
-            "title": "IReference",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IReference"
-                    ],
-                    "title": "kind"
-                },
-                "link": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IIdentifier"
-                    },
-                    "title": "link"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "link"
-            ]
-        },
-        "IPrimitiveLiteral": {
-            "title": "IPrimitiveLiteral",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IPrimitiveLiteral"
-                    ],
-                    "title": "kind"
-                },
                 "value": {
-                    "type": [
-                        "null",
-                        "string",
-                        "number",
-                        "boolean"
-                    ],
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    "$ref": "#/definitions/IType"
                 }
             },
-            "required": [
-                "id",
-                "kind",
-                "value"
-            ]
+            "type": "object"
         },
-        "ILiteralObject": {
-            "title": "ILiteralObject",
-            "type": "object",
+        "ITypeEvaluation": {
             "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ILiteralObject"
-                    ],
-                    "title": "kind"
-                },
-                "keys": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IIdentifier"
-                    },
-                    "title": "keys"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IPrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/IFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/IValueEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "keys",
-                "kind",
-                "value"
-            ]
-        },
-        "ILiteralArray": {
-            "title": "ILiteralArray",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ILiteralArray"
-                    ],
-                    "title": "kind"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IPrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/IFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/IValueEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "value"
-            ]
-        },
-        "ITypeLiteralObject": {
-            "title": "ITypeLiteralObject",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ITypePrimitiveLiteral"
-                    ],
-                    "title": "kind"
-                },
-                "keys": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IIdentifier"
-                    },
-                    "title": "keys"
-                },
-                "value": {
-                    "type": "array",
+                "arguments": {
                     "items": {
                         "anyOf": [
                             {
@@ -560,91 +490,136 @@
                             },
                             {
                                 "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeEvaluation"
                             }
                         ]
                     },
-                    "title": "value"
+                    "type": "array"
                 },
                 "id": {
-                    "type": "string",
-                    "title": "id"
+                    "type": "string"
                 },
-                "metadata": {
-                    "title": "metadata"
+                "kind": {
+                    "enum": [
+                        "ITypeEvaluation"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "object": {
+                    "$ref": "#/definitions/IReference"
                 }
             },
-            "required": [
-                "id",
-                "keys",
-                "kind",
-                "value"
+            "type": "object"
+        },
+        "ITypeFunction": {
+            "properties": {
+                "async": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "ITypeFunction"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
+                "paramTypes": {
+                    "items": {
+                        "$ref": "#/definitions/IType"
+                    },
+                    "type": "array"
+                },
+                "params": {
+                    "items": {
+                        "$ref": "#/definitions/IIdentifier"
+                    },
+                    "type": "array"
+                },
+                "returnType": {
+                    "$ref": "#/definitions/IType"
+                }
+            },
+            "type": "object"
+        },
+        "ITypeLiteral": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ITypePrimitiveLiteral"
+                },
+                {
+                    "$ref": "#/definitions/ITypeFunction"
+                },
+                {
+                    "$ref": "#/definitions/ITypeLiteralObject"
+                },
+                {
+                    "$ref": "#/definitions/ITypeLiteralArray"
+                }
             ]
         },
         "ITypeLiteralArray": {
-            "title": "ITypeLiteralArray",
-            "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "ITypePrimitiveLiteral"
                     ],
-                    "title": "kind"
+                    "type": "string"
                 },
+                "metadata": {},
                 "value": {
-                    "type": "array",
                     "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ITypePrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeEvaluation"
-                            }
-                        ]
+                        "$ref": "#/definitions/IType"
                     },
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    "type": "array"
                 }
             },
-            "required": [
-                "id",
-                "kind",
-                "value"
-            ]
+            "type": "object"
         },
-        "ITypePrimitiveLiteral": {
-            "title": "ITypePrimitiveLiteral",
-            "type": "object",
+        "ITypeLiteralObject": {
             "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "keys": {
+                    "items": {
+                        "$ref": "#/definitions/IIdentifier"
+                    },
+                    "type": "array"
+                },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "ITypePrimitiveLiteral"
                     ],
-                    "title": "kind"
+                    "type": "string"
                 },
+                "metadata": {},
+                "value": {
+                    "items": {
+                        "$ref": "#/definitions/IType"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "ITypePrimitiveLiteral": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "enum": [
+                        "ITypePrimitiveLiteral"
+                    ],
+                    "type": "string"
+                },
+                "metadata": {},
                 "type": {
                     "enum": [
                         "boolean",
@@ -653,283 +628,70 @@
                         "number",
                         "string"
                     ],
-                    "type": "string",
-                    "title": "type"
+                    "type": "string"
                 },
                 "value": {
                     "type": [
                         "string",
                         "number",
                         "boolean"
-                    ],
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    ]
                 }
             },
-            "required": [
-                "id",
-                "kind",
-                "type"
-            ]
+            "type": "object"
         },
-        "IValueEvaluation": {
-            "title": "IValueEvaluation",
-            "type": "object",
-            "properties": {
-                "object": {
-                    "$ref": "#/definitions/IReference",
-                    "title": "object"
+        "IValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/IPrimitiveLiteral"
                 },
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IValueEvaluation"
-                    ],
-                    "title": "kind"
+                {
+                    "$ref": "#/definitions/IFunction"
                 },
-                "arguments": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IPrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/IFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ILiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            }
-                        ]
-                    },
-                    "title": "arguments"
+                {
+                    "$ref": "#/definitions/ILiteralObject"
                 },
-                "id": {
-                    "type": "string",
-                    "title": "id"
+                {
+                    "$ref": "#/definitions/ILiteralArray"
                 },
-                "metadata": {
-                    "title": "metadata"
+                {
+                    "$ref": "#/definitions/IReference"
+                },
+                {
+                    "$ref": "#/definitions/IIdentifier"
+                },
+                {
+                    "$ref": "#/definitions/IValueEvaluation"
+                },
+                {
+                    "$ref": "#/definitions/IMacro<any,any>"
                 }
-            },
-            "required": [
-                "arguments",
-                "id",
-                "kind",
-                "object"
-            ]
-        },
-        "ITypeEvaluation": {
-            "title": "ITypeEvaluation",
-            "type": "object",
-            "properties": {
-                "object": {
-                    "$ref": "#/definitions/IReference",
-                    "title": "object"
-                },
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ITypeEvaluation"
-                    ],
-                    "title": "kind"
-                },
-                "arguments": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ITypePrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            }
-                        ]
-                    },
-                    "title": "arguments"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "arguments",
-                "id",
-                "kind",
-                "object"
             ]
         },
         "IValueDefinition": {
-            "title": "IValueDefinition",
-            "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "IValueDefinition"
                     ],
-                    "title": "kind"
+                    "type": "string"
                 },
+                "metadata": {},
                 "name": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IIdentifier"
-                        },
-                        {
-                            "$ref": "#/definitions/IObjectPaterrn"
-                        },
-                        {
-                            "$ref": "#/definitions/IArrayPaterrn"
-                        }
-                    ],
-                    "title": "name"
+                    "$ref": "#/definitions/IName"
                 },
                 "value": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IPrimitiveLiteral"
-                        },
-                        {
-                            "$ref": "#/definitions/IFunction"
-                        },
-                        {
-                            "$ref": "#/definitions/ILiteralObject"
-                        },
-                        {
-                            "$ref": "#/definitions/ILiteralArray"
-                        },
-                        {
-                            "$ref": "#/definitions/IReference"
-                        },
-                        {
-                            "$ref": "#/definitions/IValueEvaluation"
-                        }
-                    ],
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
+                    "$ref": "#/definitions/IValue"
                 }
             },
-            "required": [
-                "id",
-                "kind",
-                "name",
-                "value"
-            ]
+            "type": "object"
         },
-        "ITypeDefinition": {
-            "title": "ITypeDefinition",
-            "type": "object",
+        "IValueEvaluation": {
             "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ITypeDefinition"
-                    ],
-                    "title": "kind"
-                },
-                "name": {
-                    "$ref": "#/definitions/IIdentifier",
-                    "title": "name"
-                },
-                "value": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/ITypePrimitiveLiteral"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeFunction"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralObject"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralArray"
-                        },
-                        {
-                            "$ref": "#/definitions/IReference"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeEvaluation"
-                        }
-                    ],
-                    "title": "value"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "name",
-                "value"
-            ]
-        },
-        "IFunction": {
-            "title": "IFunction",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IFunction"
-                    ],
-                    "title": "kind"
-                },
-                "parameters": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IIdentifier"
-                            },
-                            {
-                                "$ref": "#/definitions/IObjectPaterrn"
-                            },
-                            {
-                                "$ref": "#/definitions/IArrayPaterrn"
-                            }
-                        ]
-                    },
-                    "title": "parameters"
-                },
-                "defaultParameters": {
-                    "type": "array",
+                "arguments": {
                     "items": {
                         "anyOf": [
                             {
@@ -948,293 +710,59 @@
                                 "$ref": "#/definitions/IReference"
                             },
                             {
-                                "$ref": "#/definitions/IValueEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "defaultParameters"
-                },
-                "paramtersType": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ITypePrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "paramtersType"
-                },
-                "typeParameters": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ITypePrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "typeParameters"
-                },
-                "returnType": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/ITypePrimitiveLiteral"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeFunction"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralObject"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralArray"
-                        },
-                        {
-                            "$ref": "#/definitions/IReference"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeEvaluation"
-                        }
-                    ],
-                    "title": "returnType"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IValueDefinition"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeDefinition"
-                            }
-                        ]
-                    },
-                    "title": "value"
-                },
-                "async": {
-                    "type": "boolean",
-                    "title": "async"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "defaultParameters",
-                "id",
-                "kind",
-                "parameters",
-                "paramtersType",
-                "typeParameters",
-                "value"
-            ]
-        },
-        "ITypeFunction": {
-            "title": "ITypeFunction",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "ITypeFunction"
-                    ],
-                    "title": "kind"
-                },
-                "params": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IIdentifier"
-                    },
-                    "title": "params"
-                },
-                "paramTypes": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ITypePrimitiveLiteral"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeFunction"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralObject"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeLiteralArray"
-                            },
-                            {
-                                "$ref": "#/definitions/IReference"
-                            },
-                            {
-                                "$ref": "#/definitions/ITypeEvaluation"
-                            }
-                        ]
-                    },
-                    "title": "paramTypes"
-                },
-                "returnType": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/ITypePrimitiveLiteral"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeFunction"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralObject"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeLiteralArray"
-                        },
-                        {
-                            "$ref": "#/definitions/IReference"
-                        },
-                        {
-                            "$ref": "#/definitions/ITypeEvaluation"
-                        }
-                    ],
-                    "title": "returnType"
-                },
-                "async": {
-                    "type": "boolean",
-                    "title": "async"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "paramTypes",
-                "params",
-                "returnType"
-            ]
-        },
-        "IObjectPaterrn": {
-            "title": "IObjectPaterrn",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "IObjectPaterrn"
-                    ],
-                    "title": "kind"
-                },
-                "patterns": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
                                 "$ref": "#/definitions/IIdentifier"
-                            },
-                            {
-                                "$ref": "#/definitions/IObjectPaterrn"
-                            },
-                            {
-                                "$ref": "#/definitions/IArrayPaterrn"
                             }
                         ]
                     },
-                    "title": "patterns"
+                    "type": "array"
                 },
                 "id": {
-                    "type": "string",
-                    "title": "id"
+                    "type": "string"
                 },
-                "metadata": {
-                    "title": "metadata"
-                }
-            },
-            "required": [
-                "id",
-                "kind",
-                "patterns"
-            ]
-        },
-        "IArrayPaterrn": {
-            "title": "IArrayPaterrn",
-            "type": "object",
-            "properties": {
                 "kind": {
-                    "type": "string",
                     "enum": [
-                        "IArrayPaterrn"
+                        "IValueEvaluation"
                     ],
-                    "title": "kind"
+                    "type": "string"
                 },
-                "patterns": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IIdentifier"
-                            },
-                            {
-                                "$ref": "#/definitions/IObjectPaterrn"
-                            },
-                            {
-                                "$ref": "#/definitions/IArrayPaterrn"
-                            }
-                        ]
-                    },
-                    "title": "patterns"
-                },
-                "id": {
-                    "type": "string",
-                    "title": "id"
-                },
-                "metadata": {
-                    "title": "metadata"
+                "metadata": {},
+                "object": {
+                    "$ref": "#/definitions/IReference"
                 }
             },
-            "required": [
-                "id",
-                "kind",
-                "patterns"
-            ]
+            "type": "object"
+        },
+        "M": {
+            "type": "object"
+        },
+        "SyntaxKind": {
+            "enum": [
+                "IArrayPaterrn",
+                "IFunction",
+                "IIdentifier",
+                "ILiteralArray",
+                "ILiteralObject",
+                "IMacro",
+                "IObjectPaterrn",
+                "IPrimitiveLiteral",
+                "IReference",
+                "ISourceFile",
+                "ISourceFileImport",
+                "ISourceFileImportElement",
+                "ITypeDefinition",
+                "ITypeEvaluation",
+                "ITypeFunction",
+                "ITypeLiteralArray",
+                "ITypeLiteralObject",
+                "ITypePrimitiveLiteral",
+                "IValueDefinition",
+                "IValueEvaluation"
+            ],
+            "type": "string"
+        },
+        "T": {
+            "type": "object"
         }
     }
 }
+
